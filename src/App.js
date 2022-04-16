@@ -1,24 +1,32 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import InfoGeneral from "./components/InfoGeneral";
+import WeatherForecast from "./components/weatherForecast/WeatherForecast"
+import Header from "./components/header/Header";
+import ConnectionProblemInfo from "./components/ConnectionProblemInfo";
+import AlertWrapper from "./components/shared/AlertWrapper";
 
 function App() {
+  const [error, riseError] = useState(false);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+    <>
+      <header>
+        <Header />
       </header>
-    </div>
+      <main role="main" style={{ paddingTop: "10px" }}>
+        <AlertWrapper />
+        {error ? (
+          <ConnectionProblemInfo />
+        ) : (
+          <>
+            <InfoGeneral />
+            <WeatherForecast 
+              riseError={(val) => riseError(val)} 
+            />
+          </>
+        )}
+      </main>
+    </>
   );
 }
 
