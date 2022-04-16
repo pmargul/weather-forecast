@@ -5,9 +5,8 @@ const InputField = ({
     type,
     placeholder,
     lang,
-    meta: { touched, error, warning },
-  }) => {
-    return (
+    meta: { touched, error },
+  }) => (
       <div className="mb-3">
         <label htmlFor={input.name} className="form-label">
           {label}
@@ -26,7 +25,6 @@ const InputField = ({
           </small>
         )}
       </div>
-    );
-  };
+  );
   
   export default InputField;

@@ -9,7 +9,7 @@ function WeatherForecast(props) {
   const [fetchProcessing, setFetchProcessingState] = useState(true);
   const [tableData, setTableData] = useState([]);
 
-  const refreshTaskData = (props) => {
+  const refreshForecastData = (props) => {
     const {
       openweathermapApiKey,
       openweathermapApiEndpointOneCall,
@@ -41,7 +41,7 @@ function WeatherForecast(props) {
   };
 
   useEffect(() => {
-    refreshTaskData(props);
+    refreshForecastData(props);
   }, [props]);
 
   return (

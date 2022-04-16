@@ -23,6 +23,34 @@ const Translations = {
       "pl-PL": "Błąd",
       "en-GB": "Error",
     },
+    searchForecast: {
+      "pl-PL": "Wyszukaj prognozę",
+      "en-GB": "Search for a forecast",
+    },
+    search: {
+      "pl-PL": "Wyszukaj",
+      "en-GB": "Search",
+    },
+    cityName: {
+      "pl-PL": "Nazwa miasta",
+      "en-GB": "City name",
+    },
+    coordinates: {
+      "pl-PL": "Współrzędne",
+      "en-GB": "Coordinates",
+    },
+    searchByCoordinates: {
+      "pl-PL": "Wyszukaj na podstawie współrzędnych",
+      "en-GB": "Search by coordinates",
+    },
+    latitude: {
+      "pl-PL": "Szerokość geograficzna",
+      "en-GB": "Latitude",
+    },
+    longitude: {
+      "pl-PL": "Długość geograficzna",
+      "en-GB": "Longitude",
+    },
     operationCompleted: {
       "pl-PL": "Operacja zakończona pomyślnie",
       "en-GB": "Operation completed successfully",
