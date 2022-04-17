@@ -7,7 +7,7 @@ const InputField = ({
     lang,
     meta: { touched, error },
   }) => (
-      <div className="mb-3">
+      <div className="mb-4">
         <label htmlFor={input.name} className="form-label">
           {label}
         </label>

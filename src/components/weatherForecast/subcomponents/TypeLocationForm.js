@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { reduxForm, Field } from "redux-form";
 import { useSelector } from "react-redux";
 import Translations from "../../../system/settings/Translations";
 import InputField from "../../shared/formFields/InputField";
-import { required } from "../../../system/services/Validations";
+import { required, number } from "../../../system/services/Validations";
 import CheckBoxField from "../../shared/formFields/CheckBoxField";
+import DropdownField from "../../shared/formFields/DropdownField";
 
 function TypeLocationForm(props) {
   const lang = useSelector(state=>state.system.language)
@@ -19,17 +20,56 @@ function TypeLocationForm(props) {
           </div>
           <Field
             label={Translations.cityName[lang]}
-            name={"name"}
+            name={"cityname"}
             component={InputField}
-            validate={required}
+            validate={searchByCoordinates? null : required}
+            disabled={searchByCoordinates}
+            lang={lang}
           />
-          {CheckBoxField()}
+          <Field
+            label={Translations.tempUnit[lang]}
+            name={"unit"}
+            component={DropdownField}
+            data={[
+              {id: "imperial", label: Translations.fahrenheit[lang]},
+              {id: "metric", label: Translations.celsius[lang]},
+            ]}
+            valueField="id"
+            textField="label"
+            validate={required}
+            lang={lang}
+          />
           <Field
             label={Translations.searchByCoordinates[lang]}
-            name={"name"}
+            name={"searchByCoordinates"}
             component={CheckBoxField}
+            customizedOnChange={(val)=>{
+              switchSearchOption(val);
+            }}
           />
+        {searchByCoordinates ? 
         <div className="row">
+          <div className="col-4">
+          <Field
+            label={Translations.latitude[lang]}
+            name={"lat"}
+            component={InputField}
+            validate={number}
+            lang={lang}
+          />
+          </div>
+          <div className="col-4">
+          <Field
+            label={Translations.longitude[lang]}
+            name={"long"}
+            component={InputField}
+            validate={number}
+            lang={lang}
+          />
+          </div>
+        </div>
+        : null}
+        <div className="row mb-5">
           <div className="col-12 col-lg-6 d-flex align-items-center"/>
           <div className="col-12 col-lg-6 d-flex align-items-center justify-content-center justify-content-lg-end flex-wrap">
             <button

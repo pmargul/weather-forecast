@@ -11,7 +11,7 @@ function InfoGeneral() {
           {Translations.generalInfo[lang]}
         </h2>
         <p className="lead text-muted">
-          {Translations.additionalInfo[lang]}
+          {Translations.additionalAppInfo[lang]}
         </p>
       </div>
     </section>

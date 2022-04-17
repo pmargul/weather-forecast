@@ -1,73 +1,73 @@
-import moment from "moment";
 import { useSelector } from "react-redux";
 import Translations from "../../../system/settings/Translations";
+import { useEffect } from "react";
+import { useState } from "react";
+import { GetWeekDaysLabels } from "../../../system/services/Calculations";
 
 function ForecastResultsTable(props) {
   const lang = useSelector(state => state.system.language)
+  
+  const [verticalHeaders, setVerticalHeaders] = useState([]);
+  const [horizontalHeaders, setHorizontalHeaders] = useState([]);
+
+  useEffect(()=>{
+    const { tempUnit } = props;
+
+    const forecastProps = [
+      {label: Translations.forecastDetails.morningTemp[lang]+` (${tempUnit})`, key: "morningTemp"},
+      {label: Translations.forecastDetails.dayTemp[lang]+` (${tempUnit})`, key: "dayTemp"},
+      {label: Translations.forecastDetails.nightTemp[lang]+` (${tempUnit})`, key: "nightTemp"},
+      {label: Translations.forecastDetails.humilidity[lang]+" (%)", key: "humilidity"},
+    ]
+    setVerticalHeaders(forecastProps);
+    setHorizontalHeaders(GetWeekDaysLabels(lang, props.daysAmount));
+  }, [lang, props]);
+
+  
   return (
     <div className="table-responsive">
       <table className="table table-striped">
         <thead>
           <tr className="table-header">
-            {props.columns.map((col) => {
+            <th scope="col" className="text-center" key={"th"} style={{alignItems: "center"}}>
+              <p style={{margin: "0px"}}>{Translations.forecast[lang]}</p>
+            </th>
+            {horizontalHeaders.map((col, index) => {
               return (
-                <th scope="col" className="text-center" key={col.key}>
-                  {col.label}
+                <th scope="col" className="text-center" key={"th"+index}>
+                  {col}
+                  {index < props.dailyForecastSet.length ? 
+                  <img src={`http://openweathermap.org/img/wn/${props.dailyForecastSet[index].weatherIcon}@2x.png`} alt="Weather Icon" style={{width: "40px", height: "30px"}}/> : null}
                 </th>
               );
             })}
           </tr>
         </thead>
         <tbody>
-          {props.data.map((el, index) => {
+          {props.dailyForecastSet.length > 0 ? verticalHeaders.map((row, index) => {
+            
             return (
               <tr
-                className={props.selectedRow === el._id ? "table-row-selected" : null}
                 key={index}
-                onClick={() => {
-                  if (el._id === props.selectedRow) props.selectRow(null);
-                  else props.selectRow(el._id);
-                }}
               >
-                {props.columns.map((col) => {
-                  let value = "";
-                  if (col.boolean) {
-                    value = el[col.key] ? (
-                      <input
-                        className="form-check-input"
-                        type="checkbox"
-                        checked={true}
-                        onChange={(e) => e.preventDefault()}
-                      />
-                    ) : (
-                      ""
-                    );
-                  } else if(col.select){
-                    const option = col.select.find(opt=>opt.id===el[col.key]);     
-                    value = option? option.label : ""
-                  } else if (col.datetime) {
-                    value = moment(new Date(el[col.key])).format(
-                      "YYYY-MM-DD"
-                    );
-                    if (!el[col.key]) {
-                      value = "";
-                    }
-                  } else {
-                    value = el[col.key] ? el[col.key] : "";
-                  }
-
+                <td key={"td"} className="text-center" style={{fontWeight: "bold"}}>
+                  {row.label}
+                </td>
+                {props.dailyForecastSet.map((col, col_index) => {
+                  if(col_index >= props.daysAmount) return;
+                  
                   return (
-                    <td key={index + "-" + col.key} className="text-center">
-                      {value}
+                    <td key={index + "-" + col_index} className="text-center">
+                      {col[row.key]}
                     </td>
                   );
                 })}
               </tr>
             );
-          })}
+          }): null}
         </tbody> 
       </table>
-      {props.data.length === 0 ? (
+      {props.dailyForecastSet.length === 0 ? (
           <div style={{ textAlign: "center",fontWeight: 'bold' }}>{Translations.forecastLackInfo[lang]}</div>
         ) : null}
     </div>
