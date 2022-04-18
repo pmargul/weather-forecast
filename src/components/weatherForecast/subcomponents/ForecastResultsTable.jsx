@@ -28,13 +28,13 @@ function ForecastResultsTable(props) {
     <div className="table-responsive">
       <table className="table table-striped">
         <thead>
-          <tr className="table-header">
+          <tr className="table-header" style={{borderColor: "transparent"}}>
             <th scope="col" className="text-center" key={"th"} style={{alignItems: "center"}}>
               <p style={{margin: "0px"}}>{Translations.forecast[lang]}</p>
             </th>
             {horizontalHeaders.map((col, index) => {
               return (
-                <th scope="col" className="text-center" key={"th"+index}>
+                <th scope="col" className="text-center standart-table-header" key={"th"+index}>
                   {col}
                   {index < props.dailyForecastSet.length ? 
                   <img src={`http://openweathermap.org/img/wn/${props.dailyForecastSet[index].weatherIcon}@2x.png`} alt="Weather Icon" style={{width: "40px", height: "30px"}}/> : null}
@@ -50,11 +50,11 @@ function ForecastResultsTable(props) {
               <tr
                 key={index}
               >
-                <td key={"td"} className="text-center" style={{fontWeight: "bold"}}>
+                <td key={"td"} className="text-center special-table-cell">
                   {row.label}
                 </td>
                 {props.dailyForecastSet.map((col, col_index) => {
-                  if(col_index >= props.daysAmount) return;
+                  if(col_index >= props.daysAmount) return null;
                   
                   return (
                     <td key={index + "-" + col_index} className="text-center">

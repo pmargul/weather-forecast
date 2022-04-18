@@ -1,51 +1,73 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { getApi } from "../../system/services/ApiRequests";
 import AppVariables from "../../system/settings/AppVariables";
 import SystemSpinner from "../shared/SystemSpinner";
 import TypeLocationForm from "./subcomponents/TypeLocationForm";
 import ForecastResultsTable from "./subcomponents/ForecastResultsTable";
 import Translations from "../../system/settings/Translations";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import ForecastOverview from "./subcomponents/ForecastOverview";
+import ForecastChartWrapper from "./subcomponents/ForecastChartWrapper";
+import { addAlert } from "../../redux/actions";
 
 function WeatherForecast(props) {
-  const lang = useSelector(state => state.system.language)
+  const lang = useSelector((state) => state.system.language);
+  const dispatch = useDispatch()
 
   const [fetchProcessing, setFetchProcessingState] = useState(false);
   const [forecastInfo, setForecastInfo] = useState({});
   const [tableData, setTableData] = useState(null);
   const [tempUnit, setTempUnit] = useState("");
 
-  const refreshForecastData = ({ cityname, lat, lon, unit, searchByCoordinates }) => {
-    const unitPostFix = unit.id.toString().localeCompare('metric') === 0 ? 'C' : 'F' 
+  const refreshForecastData = ({
+    cityname,
+    lat,
+    lon,
+    unit,
+    searchByCoordinates,
+  }) => {
+    const unitPostFix =
+      unit.id.toString().localeCompare("metric") === 0 ? "C" : "F";
+
+    const handleError = () => {
+      setTableData([]);
+      setFetchProcessingState(false);
+      dispatch(addAlert(Translations.commonErrorMessage[lang],"danger ",Translations.error[lang]))
+    };
 
     const mapResults = (resultSet) => {
-      return resultSet.filter((el,index)=> index <= AppVariables.forecastDayAmount).map(el => {
-        const mapped = {
-          morningTemp: parseInt(el.temp.morn),
-          dayTemp: parseInt(el.temp.day),
-          nightTemp: parseInt(el.temp.night),
-          humilidity: parseInt(el.humidity),
-          weatherIcon: el.weather[0].icon
-        };
-        return mapped;
-      })
-    }
+      return resultSet
+        ? resultSet
+            .filter((el, index) => index <= AppVariables.forecastDayAmount)
+            .map((el) => {
+              const mapped = {
+                morningTemp: parseInt(el.temp.morn),
+                dayTemp: parseInt(el.temp.day),
+                nightTemp: parseInt(el.temp.night),
+                humilidity: parseInt(el.humidity),
+                weatherIcon: el.weather[0].icon,
+              };
+              return mapped;
+            })
+        : [];
+    };
 
-    const fetchForecastByCoord = (url, coord) =>{
+    const fetchForecastByCoord = (url, coord) => {
       getApi(url)
-      .then((res) => {
-        setTableData(mapResults(res.daily));
-        setFetchProcessingState(false);
-        setForecastInfo({ lon: coord.lon, lat: coord.lat, cityname: cityname})
-        setTempUnit(unitPostFix);
-      })
-      .catch((er) => {
-        setTableData([]);
-        setFetchProcessingState(false);
-        throw er;
-      });
-    }
+        .then((res) => {
+          setTableData(mapResults(res.daily));
+          setFetchProcessingState(false);
+          setForecastInfo({
+            lon: coord.lon,
+            lat: coord.lat,
+            cityname: cityname,
+          });
+          setTempUnit(unitPostFix);
+        })
+        .catch(() => {
+          handleError();
+        });
+    };
 
     const {
       openweathermapApiKey,
@@ -55,7 +77,7 @@ function WeatherForecast(props) {
     setFetchProcessingState(true);
 
     if (searchByCoordinates) {
-      fetchForecastByCoord(url, {lat: lat, lon: lon})
+      fetchForecastByCoord(url, { lat: lat, lon: lon });
     } else {
       const specifyCordinatesUrl = `https://api.openweathermap.org/data/2.5/weather?q=${cityname}&appid=${openweathermapApiKey}`;
 
@@ -66,9 +88,8 @@ function WeatherForecast(props) {
 
           fetchForecastByCoord(url, coord);
         })
-        .catch((er) => {
-          setTableData([]);
-          setFetchProcessingState(false);
+        .catch(() => {
+          handleError();
         });
     }
   };
@@ -82,26 +103,47 @@ function WeatherForecast(props) {
         {/*Alerty jak wiele rekordów lub błedy*/}
         {fetchProcessing ? (
           <SystemSpinner />
-        ) : tableData ? 
-        <>
-          {tableData.length !== 0 ? 
-          <div className="row mb-4">
-            <h3>{Translations.forecastInfo(forecastInfo.lat, forecastInfo.lon, lang, forecastInfo.cityname)}</h3>
-          </div> : null}
-          <div className="row mb-4"> 
-            <ForecastResultsTable dailyForecastSet={tableData} forecastInfo={forecastInfo} daysAmount={AppVariables.forecastDayAmount} tempUnit={tempUnit}/> 
-          </div>
-          {tableData.length !== 0 ? 
+        ) : tableData ? (
           <>
-          <div className="row mb-4"> 
-            <ForecastOverview dailyForecastSet={tableData} tempUnit={tempUnit}/>
-            {/*graph*/}
-          </div> 
+            {tableData.length !== 0 ? (
+              <div className="row mb-4">
+                <h3>
+                  {Translations.forecastInfo(
+                    forecastInfo.lat,
+                    forecastInfo.lon,
+                    lang,
+                    forecastInfo.cityname
+                  )}
+                </h3>
+              </div>
+            ) : null}
+            <div className="row mb-4">
+              <ForecastResultsTable
+                dailyForecastSet={tableData}
+                forecastInfo={forecastInfo}
+                daysAmount={AppVariables.forecastDayAmount}
+                tempUnit={tempUnit}
+              />
+            </div>
+            {tableData.length !== 0 ? (
+              <>
+                <ForecastChartWrapper
+                  dailyForecastSet={tableData}
+                  daysAmount={AppVariables.forecastDayAmount}
+                  tempUnit={tempUnit}
+                />
+                <div className="row mb-4">
+                  <ForecastOverview
+                    dailyForecastSet={tableData}
+                    tempUnit={tempUnit}
+                  />
+                  {/*graph*/}
+                </div>
+                
+              </>
+            ) : null}
           </>
-          : null }
-        </>
-        : null
-        }
+        ) : null}
       </div>
     </div>
   );

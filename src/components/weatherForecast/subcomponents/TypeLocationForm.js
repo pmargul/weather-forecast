@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { reduxForm, Field } from "redux-form";
 import { useSelector } from "react-redux";
 import Translations from "../../../system/settings/Translations";
@@ -61,7 +61,7 @@ function TypeLocationForm(props) {
           <div className="col-4">
           <Field
             label={Translations.longitude[lang]}
-            name={"long"}
+            name={"lon"}
             component={InputField}
             validate={number}
             lang={lang}

@@ -168,11 +168,11 @@ const Translations = {
       "en-GB": "Humilidity",
     },
     minValue: {
-      "pl-PL": "Maksymalna wartość",
+      "pl-PL": "Minimalna wartość",
       "en-GB": "Minimum value",
     },
     maxValue: {
-      "pl-PL": "Minimalna wartość",
+      "pl-PL": "Maksymalna wartość",
       "en-GB": "Maximum value",
     },
     meanValue: {

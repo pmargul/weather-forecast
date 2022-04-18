@@ -94,3 +94,18 @@ button + button {
   border-radius: 0px;
 }
 
+.special-table-cell {
+  background-color: rgb(36, 36, 36) !important;
+  border-color: rgb(36, 36, 36) !important;
+  border-bottom-width: initial;
+  color: white;
+  font-weight: bold;
+}
+.standart-table-header {
+  background-color: lightgray !important;
+  border-color: lightgray !important;
+  border-bottom-width: initial;
+  color: black;
+  font-weight: bold;
+}
+
